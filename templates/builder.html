@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="py-4 pb-24 md:pb-10"> <!-- pb-24: место под нижнюю мобильную панель -->
+  <!-- Липкий верхний тулбар -->
+  <div id="editToolbar" class="toolbar px-4 md:px-6 py-3">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- mobile: кнопка-меню -->
+        <button id="openDrawer" class="lg:hidden chip" aria-label="Menu">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="AstraLoom" class="h-6 w-6 opacity-90">
+        <h1 class="text-xl md:text-2xl font-bold">Konstruktor: {{ p.title }}</h1>
+        <a class="hidden sm:inline-flex chip" target="_blank" href="{{ url_for('view_portfolio', slug=p.slug) }}">
+          <i class="bi bi-box-arrow-up-right"></i>/p/{{ p.slug }}
+        </a>
+      </div>
+      <div class="hidden md:flex items-center gap-2">
+        <a class="btn--ghost" href="{{ url_for('export_pdf', pid=p.id) }}"><i class="bi bi-filetype-pdf"></i>Export PDF</a>
+        <button id="openSettings" class="btn--ghost"><i class="bi bi-gear"></i>Settings</button>
+        <button id="saveBtn" class="btn"><i class="bi bi-cloud-check"></i>Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="builder" class="mt-6 grid lg:grid-cols-[320px,1fr] gap-6">
+    <!-- Левый сайдбар: на мобиле это drawer -->
+    <div id="sideDrawer" class="drawer lg:static lg:block">
+      <div class="drawer__mask" data-drawer-close="1"></div>
+      <aside class="drawer__panel card space-y-4 h-[calc(100dvh-72px)] lg:h-max lg:sticky lg:top-24 overflow-y-auto">
+        <!-- mobile: заголовок панели -->
+        <div class="flex items-center justify-between lg:hidden mb-2">
+          <div class="text-sm text-white/70">Project settings</div>
+          <button class="chip" data-drawer-close="1"><i class="bi bi-x-lg"></i>Close</button>
+        </div>
+
+        <div>
+          <label class="label">Tytuł</label>
+          <input class="input text-base h-11" id="title" placeholder="My portfolio">
+        </div>
+        <div>
+          <label class="label">Slug (URL)</label>
+          <input class="input text-base h-11" id="slug" placeholder="twoj-slug">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="label">Primary color</label>
+            <input class="input h-11" id="color" type="color">
+          </div>
+          <div>
+            <label class="label">Background</label>
+            <input class="input h-11" id="bg" type="color">
+          </div>
+        </div>
+        <div>
+          <label class="label">Język UI</label>
+          <select class="input text-base h-11" id="locale">
+            <option value="pl">PL</option>
+            <option value="en">EN</option>
+            <option value="uk">UA</option>
+          </select>
+        </div>
+        <div class="pt-2">
+          <div class="text-sm text-white/70 mb-2">Sekcje</div>
+          <div id="sections" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- mobile: действия внизу панели -->
+        <div class="lg:hidden pt-2 border-t border-white/10 flex gap-2 sticky bottom-0 bg-black/10 backdrop-blur rounded-b-2xl">
+          <button id="drawerSave" class="btn flex-1"><i class="bi bi-cloud-check"></i>Save</button>
+          <button id="drawerSettings" class="btn--ghost flex-1"><i class="bi bi-gear"></i>Settings</button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Основной редактор -->
+    <div class="space-y-6">
+      <div class="card">
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-person-badge"></i>Profil i kontakty</h2>
+        <div id="profileEditor" class="mt-4 grid md:grid-cols-2 gap-4"></div>
+        <div class="mt-3">
+          <input type="file" id="avatarUpload" accept="image/*" class="hidden">
+          <button id="avatarUploadBtn" class="chip"><i class="bi bi-upload"></i>Загрузить аватар</button>
+          <span class="text-white/60 text-sm ml-2">PNG/JPG/WebP до 5MB</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-kanban"></i>Projekty</h2>
+          <button class="chip" id="addProject"><i class="bi bi-plus-lg"></i>dodaj projekt</button>
+        </div>
+        <div id="projectsEditor" class="mt-4 grid gap-3"></div>
+      </div>
+
+      <!-- Certificates -->
+      <section class="card">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Certificates</h3>
+          <div class="flex gap-2">
+            <button id="addCertBtn" type="button" class="chip">+ add</button>
+            <button id="saveCertsBtn" type="button" class="chip">Save</button>
+          </div>
+        </div>
+        <div id="certList" class="mt-4 space-y-3"></div>
+        <template id="certRowTpl">
+          <div class="rounded-2xl p-3 bg-white/5 border border-white/10 flex flex-col gap-2">
+            <div class="grid md:grid-cols-2 gap-2">
+              <input class="input h-11" placeholder="Name">
+              <input class="input h-11" placeholder="Issuer">
+            </div>
+            <div class="grid md:grid-cols-3 gap-2">
+              <input class="input h-11" placeholder="Date (YYYY-MM)">
+              <input class="input h-11" placeholder="Credential ID (optional)">
+              <input class="input h-11" placeholder="Credential URL (optional)">
+            </div>
+            <div class="flex justify-end">
+              <button class="chip danger remove">Remove</button>
+            </div>
+          </div>
+        </template>
+      </section>
+
+      <!-- Stack -->
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-puzzle"></i>Stack (grupy)</h2>
+          <button class="chip" id="addStackGroup"><i class="bi bi-plus-lg"></i>add group</button>
+        </div>
+        <div id="stackEditor" class="mt-4 grid gap-3"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-graph-up"></i>Skills (progress)</h2>
+        <div id="skillsEditor" class="mt-4 grid gap-3"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-translate"></i>Języki (CEFR)</h2>
+        <div id="spokenEditor" class="mt-4 grid gap-3"></div>
+      </div>
+
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-briefcase"></i>Doświadczenie</h2>
+          <button class="chip" id="addExp"><i class="bi bi-plus-lg"></i>pozycja</button>
+        </div>
+        <div id="experienceEditor" class="mt-4 grid gap-3"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-mortarboard"></i>Edukacja / osiągnięcia</h2>
+        <div id="eduEditor" class="mt-4 grid gap-3"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-info-circle"></i>About (HTML)</h2>
+        <textarea id="aboutHtml" class="input h-40"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Settings modal -->
+<div id="settingsModal" class="modal hidden">
+  <div class="modal__backdrop" data-close="1"></div>
+  <div class="modal__dialog card max-w-3xl mx-auto">
+    <div class="flex items-center justify-between">
+      <h3 class="text-xl font-semibold">Ustawienia strony</h3>
+      <button class="chip" data-close="1"><i class="bi bi-x-lg"></i>Закрыть</button>
+    </div>
+
+    <div class="mt-4 grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="label">Title</label>
+        <input class="input h-11" id="sm-title">
+      </div>
+      <div>
+        <label class="label">Slug</label>
+        <input class="input h-11" id="sm-slug">
+      </div>
+      <div>
+        <label class="label">Primary color</label>
+        <input class="input h-11" id="sm-color" type="color">
+      </div>
+      <div>
+        <label class="label">Background</label>
+        <input class="input h-11" id="sm-bg" type="color">
+      </div>
+      <div class="md:col-span-2">
+        <label class="label">Custom domain (info)</label>
+        <input class="input h-11" id="sm-domain" placeholder="yourdomain.com">
+        <p class="text-white/60 text-sm mt-1">Подключение DNS добавим позже.</p>
+      </div>
+      <div class="md:col-span-2">
+        <div class="text-white/70 text-sm">Public URL: <span id="sm-public" class="text-white"></span></div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-start justify-between">
+      <div>
+        <div class="text-red-400 font-semibold flex items-center gap-2"><i class="bi bi-exclamation-triangle"></i>Danger Zone</div>
+        <p class="text-white/70 text-sm">Удаление портфолио необратимо.</p>
+        <button id="deletePortfolio" class="btn--danger mt-2"><i class="bi bi-trash3"></i>Удалить</button>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn--ghost" data-close="1" id="smCancel"><i class="bi bi-x-circle"></i>Cancel</button>
+        <button class="btn" id="smSave"><i class="bi bi-check2-circle"></i>Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Мобильная нижняя панель действий -->
+<div class="mbar md:hidden">
+  <a class="mbar__btn" href="{{ url_for('view_portfolio', slug=p.slug) }}"><i class="bi bi-box-arrow-up-right"></i><span>View</span></a>
+  <button id="mOpenSettings" class="mbar__btn"><i class="bi bi-gear"></i><span>Settings</span></button>
+  <a class="mbar__btn" href="{{ url_for('export_pdf', pid=p.id) }}"><i class="bi bi-filetype-pdf"></i><span>PDF</span></a>
+  <button id="mSave" class="mbar__btn mbar__btn--primary"><i class="bi bi-cloud-check"></i><span>Save</span></button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% set boot = {'pid': p.id, 'api': url_for('api_portfolio', pid=p.id), 'public': url_for('view_portfolio', slug=p.slug)} %}
+<script>
+  (function(){
+    var tb = document.getElementById('editToolbar');
+    if (!tb) return;
+    function upd(){ if (window.scrollY > 8) tb.classList.add('toolbar-scrolled'); else tb.classList.remove('toolbar-scrolled'); }
+    document.addEventListener('scroll', upd, {passive:true}); upd();
+  })();
+  window.BUILDER_BOOT = {{ boot | tojson }};
+</script>
+<link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css">
+<script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<script src="{{ url_for('static', filename='js/builder.js') }}" defer></script>
+
+<!-- Mobile drawer & action bar glue -->
+<script>
+  (function(){
+    function $(id){return document.getElementById(id)}
+    var drawer = document.getElementById('sideDrawer');
+    var openBtn = $('openDrawer');
+    function open(){ drawer.classList.add('open'); document.body.style.overflow='hidden'; }
+    function close(){ drawer.classList.remove('open'); document.body.style.overflow=''; }
+    if (openBtn) openBtn.addEventListener('click', open);
+    drawer && drawer.addEventListener('click', function(e){
+      if (e.target && (e.target.getAttribute('data-drawer-close')==='1')) close();
+    });
+    // нижняя панель: прокидываем клики на существующие кнопки
+    function proxyClick(srcId, dstId){ var s=$(srcId), d=$(dstId); if(s&&d) s.addEventListener('click', function(){ d.click() }) }
+    proxyClick('mSave','saveBtn');
+    proxyClick('mOpenSettings','openSettings');
+    proxyClick('drawerSave','saveBtn');
+    proxyClick('drawerSettings','openSettings');
+  })();
+</script>
+{% endblock %}

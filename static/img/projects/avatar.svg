@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#38F2AF"/>
+      <stop offset="1" stop-color="#2B2C34"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#g)"/>
+  <circle cx="100" cy="70" r="40" fill="rgba(255,255,255,0.85)"/>
+  <rect x="40" y="120" width="120" height="60" rx="30" fill="rgba(255,255,255,0.85)"/>
+  <text x="100" y="190" text-anchor="middle" fill="#fff" font-size="22" font-family="Arial" font-weight="700">НК</text>
+</svg>

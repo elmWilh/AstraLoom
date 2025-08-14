@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AstraLoom — Portfolio Constructor</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{{ url_for('static', filename='js/select.js') }}" defer></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: { DEFAULT: '#38F2AF' }, bg: '#2B2C34' },
+          boxShadow: { soft: '0 10px 30px rgba(0,0,0,0.15)' },
+          borderRadius: { '2xl': '1.25rem' }
+        }
+      },
+      darkMode: 'class'
+    }
+  </script>
+
+  <!-- Tailwind CDN -->
+  <style type="text/tailwindcss">
+    @layer components {
+      .section-title { @apply text-2xl md:text-3xl font-semibold; }
+      .card { @apply p-5 rounded-2xl bg-white/5 hover:bg-white/10 transition-shadow shadow-soft; }
+      .chip { @apply inline-flex items-center gap-2 px-3 py-1 rounded-2xl bg-white/10 hover:bg-white/20 text-sm; }
+      .tag { @apply text-xs px-2 py-1 rounded-2xl bg-white/10; }
+      .btn { @apply inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-primary text-black font-medium hover:opacity-90; }
+      .btn--ghost { @apply inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/10 text-white hover:bg-white/20; }
+      .btn--danger { @apply inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-red-500/80 text-white hover:bg-red-500; }
+      .input { @apply w-full px-3 py-2 rounded-2xl bg-white/10 focus:bg-white/20 outline-none; }
+      .label { @apply block text-sm text-white/70 mb-1; }
+
+      /* Toolbar */
+      .toolbar { @apply sticky top-0 z-40 rounded-2xl bg-white/5 backdrop-blur-md shadow-soft; }
+      .toolbar-scrolled { @apply bg-white/10 shadow-lg; }
+
+      .brand { @apply flex items-center gap-2 font-semibold tracking-wide; }
+      .brand img { @apply h-6 w-6; }
+    }
+  </style>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="bg-bg text-white antialiased selection:bg-primary selection:text-black">
+  <header class="max-w-6xl mx-auto px-4 md:px-8 py-4">
+    <nav class="flex items-center justify-between">
+      <a href="{{ url_for('landing') }}" class="brand">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="AstraLoom">
+        <span>AstraLoom</span>
+      </a>
+      <div class="flex items-center gap-3">
+        {% if current_user.is_authenticated %}
+          <a class="chip" href="{{ url_for('dashboard') }}"><i class="bi bi-speedometer2"></i>Dashboard</a>
+          <a class="chip" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right"></i>Logout</a>
+        {% else %}
+          <a class="chip" href="{{ url_for('login') }}"><i class="bi bi-box-arrow-in-right"></i>Login</a>
+          <a class="chip" href="{{ url_for('register') }}"><i class="bi bi-person-plus"></i>Register</a>
+        {% endif %}
+        <button id="themeToggle" class="chip" title="Theme"><i class="bi bi-moon-stars"></i></button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 md:px-8">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+      <div class="mt-4 space-y-2">
+        {% for cat, msg in msgs %}
+          <div class="p-3 rounded-2xl {% if cat=='error' %}bg-red-500/20{% else %}bg-green-500/20{% endif %}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 md:px-8 my-16 text-center text-sm text-white/70">
+    <div class="inline-flex items-center gap-2">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="AstraLoom" class="h-4 w-4 opacity-80">
+      <span>© AstraLoom, 2025</span>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

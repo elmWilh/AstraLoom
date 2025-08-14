@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="py-12 max-w-md mx-auto">
+  <h1 class="text-3xl font-bold">Logowanie</h1>
+  <form class="mt-6 space-y-4" method="post">
+    <input class="input" name="email" placeholder="Email lub username" required>
+    <input class="input" type="password" name="password" placeholder="Hasło" required>
+    <button class="btn w-full" type="submit">Zaloguj</button>
+  </form>
+  <p class="mt-4 text-white/70">Nie masz konta? <a class="underline" href="{{ url_for('register') }}">Zarejestruj się</a></p>
+</section>
+{% endblock %}

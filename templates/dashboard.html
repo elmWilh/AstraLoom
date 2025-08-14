@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="py-10">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold">Twoje portfolia</h1>
+    <button id="createPortfolio" class="btn">Nowe portfolio</button>
+  </div>
+  <div class="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for p in portfolios %}
+      <article class="card">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-lg font-semibold">{{ p.title }}</div>
+            <div class="text-white/60 text-sm">/p/{{ p.slug }}</div>
+          </div>
+          <a class="btn btn--ghost" href="{{ url_for('view_portfolio', slug=p.slug) }}" target="_blank">Podgląd</a>
+        </div>
+        <div class="mt-4 flex gap-3">
+          <a class="btn" href="{{ url_for('builder', pid=p.id) }}">Edytuj</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  (function(){
+    var btn = document.getElementById('createPortfolio');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      fetch('{{ url_for("api_create_portfolio") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ title: 'My Portfolio' })
+      })
+      .then(function(res){ return res.json().then(function(j){ return {ok:res.ok, j:j}; }); })
+      .then(function(r){
+        if (!r.ok) { alert('Create failed: ' + (r.j && r.j.error ? r.j.error : '')); return; }
+        location.href = '/builder/' + r.j.id;
+      })
+      .catch(function(){ alert('Network error while creating portfolio'); });
+    });
+  })();
+</script>
+{% endblock %}

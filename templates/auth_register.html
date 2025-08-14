@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="py-12 max-w-md mx-auto">
+  <h1 class="text-3xl font-bold">Rejestracja</h1>
+  <form class="mt-6 space-y-4" method="post">
+    <input class="input" name="email" placeholder="Email" type="email" required>
+    <input class="input" name="username" placeholder="Username" required>
+    <input class="input" type="password" name="password" placeholder="Hasło" required>
+    <button class="btn w-full" type="submit">Utwórz konto</button>
+  </form>
+  <p class="mt-4 text-white/70">Masz konto? <a class="underline" href="{{ url_for('login') }}">Zaloguj</a></p>
+</section>
+{% endblock %}
