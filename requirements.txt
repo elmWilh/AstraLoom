@@ -6,3 +6,5 @@ itsdangerous
 Jinja2
 WeasyPrint
 Pillow
+gunicorn
+pdfkit
