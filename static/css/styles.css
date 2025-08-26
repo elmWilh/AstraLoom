@@ -200,7 +200,7 @@ select.input:focus{outline:none;box-shadow:0 0 0 3px rgba(56,242,175,.25)}
   content:"";position:absolute;left:0;top:2px;bottom:2px;width:4px;border-radius:4px;background:var(--primary)
 }
 
-/* pf Progress with value bubble (использует data-val на .progress__bar) */
+/* pf Progress with value bubble (using data-val in .progress__bar) */
 .pf .progress{
   position:relative;height:10px;border-radius:9999px;
   background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.05));
@@ -298,5 +298,6 @@ select.input:focus{outline:none;box-shadow:0 0 0 3px rgba(56,242,175,.25)}
 .mbar__btn i{ font-size:1rem; line-height:1; }
 .mbar__btn--primary{ background: var(--primary); color:#111; border-color: transparent; }
 
-/* удобство на сенсорных */
-.input, textarea.input{ font-size:16px; } /* гасим zoom iOS */
+
+.input, textarea.input{ font-size:16px; } /* IOS */
+
