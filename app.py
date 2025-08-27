@@ -106,11 +106,7 @@ def default_portfolio_data():
             "avatar_url": "img/avatar.svg",  # внутри /assets/img/...
             "profile_type": "it",
             "contacts": {"github": "", "linkedin": "", "telegram": "", "email": "", "phone": ""},
-            "taglines": {
-                "pl": "Krótki opis o Tobie (PL).",
-                "en": "Short tagline about you (EN).",
-                "uk": "Короткий опис про вас (UK)."
-            }
+            "taglines": { "Krótki opis o Tobie.",}
         },
         "stack_groups": [
             {"name": "Languages", "items": ["Python", "JavaScript"], "visible": True},

@@ -78,7 +78,7 @@
               uploadFile(file, function(path){
                 d.data.profile.avatar_url = path;
                 var node = pe.querySelector('input[data-k="avatar_url"]'); if (node) node.value = path;
-                toast('Аватар загружен');
+                toast('Avatar uploaded');
               });
             });
           });
@@ -86,7 +86,7 @@
           uploadFile(avatarInput.files[0], function(path){
             d.data.profile.avatar_url = path;
             var node = pe.querySelector('input[data-k="avatar_url"]'); if (node) node.value = path;
-            toast('Аватар загружен');
+            toast('Avatar uploaded');
           });
         }
       };

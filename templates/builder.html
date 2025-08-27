@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="py-4 pb-24 md:pb-10"> <!-- pb-24: место под нижнюю мобильную панель -->
-  <!-- Липкий верхний тулбар -->
+<section class="py-4 pb-24 md:pb-10">
   <div id="editToolbar" class="toolbar px-4 md:px-6 py-3">
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <!-- mobile: кнопка-меню -->
         <button id="openDrawer" class="lg:hidden chip" aria-label="Menu">
           <i class="bi bi-list"></i>
         </button>
@@ -25,11 +23,9 @@
   </div>
 
   <div id="builder" class="mt-6 grid lg:grid-cols-[320px,1fr] gap-6">
-    <!-- Левый сайдбар: на мобиле это drawer -->
     <div id="sideDrawer" class="drawer lg:static lg:block">
       <div class="drawer__mask" data-drawer-close="1"></div>
       <aside class="drawer__panel card space-y-4 h-[calc(100dvh-72px)] lg:h-max lg:sticky lg:top-24 overflow-y-auto">
-        <!-- mobile: заголовок панели -->
         <div class="flex items-center justify-between lg:hidden mb-2">
           <div class="text-sm text-white/70">Project settings</div>
           <button class="chip" data-drawer-close="1"><i class="bi bi-x-lg"></i>Close</button>
@@ -66,7 +62,6 @@
           <div id="sections" class="flex flex-wrap gap-2"></div>
         </div>
 
-        <!-- mobile: действия внизу панели -->
         <div class="lg:hidden pt-2 border-t border-white/10 flex gap-2 sticky bottom-0 bg-black/10 backdrop-blur rounded-b-2xl">
           <button id="drawerSave" class="btn flex-1"><i class="bi bi-cloud-check"></i>Save</button>
           <button id="drawerSettings" class="btn--ghost flex-1"><i class="bi bi-gear"></i>Settings</button>
@@ -74,15 +69,14 @@
       </aside>
     </div>
 
-    <!-- Основной редактор -->
     <div class="space-y-6">
       <div class="card">
         <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-person-badge"></i>Profil i kontakty</h2>
         <div id="profileEditor" class="mt-4 grid md:grid-cols-2 gap-4"></div>
         <div class="mt-3">
           <input type="file" id="avatarUpload" accept="image/*" class="hidden">
-          <button id="avatarUploadBtn" class="chip"><i class="bi bi-upload"></i>Загрузить аватар</button>
-          <span class="text-white/60 text-sm ml-2">PNG/JPG/WebP до 5MB</span>
+          <button id="avatarUploadBtn" class="chip"><i class="bi bi-upload"></i>Upload Avatar</button>
+          <span class="text-white/60 text-sm ml-2">PNG/JPG/WebP 5MB</span>
         </div>
       </div>
 
@@ -191,7 +185,7 @@
       <div class="md:col-span-2">
         <label class="label">Custom domain (info)</label>
         <input class="input h-11" id="sm-domain" placeholder="yourdomain.com">
-        <p class="text-white/60 text-sm mt-1">Подключение DNS добавим позже.</p>
+        <p class="text-white/60 text-sm mt-1">We will add DNS connection later.</p>
       </div>
       <div class="md:col-span-2">
         <div class="text-white/70 text-sm">Public URL: <span id="sm-public" class="text-white"></span></div>
@@ -201,8 +195,8 @@
     <div class="mt-6 flex items-start justify-between">
       <div>
         <div class="text-red-400 font-semibold flex items-center gap-2"><i class="bi bi-exclamation-triangle"></i>Danger Zone</div>
-        <p class="text-white/70 text-sm">Удаление портфолио необратимо.</p>
-        <button id="deletePortfolio" class="btn--danger mt-2"><i class="bi bi-trash3"></i>Удалить</button>
+        <p class="text-white/70 text-sm">Deleting a portfolio is irreversible..</p>
+        <button id="deletePortfolio" class="btn--danger mt-2"><i class="bi bi-trash3"></i>Delete</button>
       </div>
       <div class="flex gap-2">
         <button class="btn--ghost" data-close="1" id="smCancel"><i class="bi bi-x-circle"></i>Cancel</button>
@@ -212,7 +206,6 @@
   </div>
 </div>
 
-<!-- Мобильная нижняя панель действий -->
 <div class="mbar md:hidden">
   <a class="mbar__btn" href="{{ url_for('view_portfolio', slug=p.slug) }}"><i class="bi bi-box-arrow-up-right"></i><span>View</span></a>
   <button id="mOpenSettings" class="mbar__btn"><i class="bi bi-gear"></i><span>Settings</span></button>
@@ -248,7 +241,6 @@
     drawer && drawer.addEventListener('click', function(e){
       if (e.target && (e.target.getAttribute('data-drawer-close')==='1')) close();
     });
-    // нижняя панель: прокидываем клики на существующие кнопки
     function proxyClick(srcId, dstId){ var s=$(srcId), d=$(dstId); if(s&&d) s.addEventListener('click', function(){ d.click() }) }
     proxyClick('mSave','saveBtn');
     proxyClick('mOpenSettings','openSettings');

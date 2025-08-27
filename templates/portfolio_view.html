@@ -24,9 +24,6 @@
               <span class="tag">profile: {{ d.profile.profile_type }}</span>
             {% endif %}
           </div>
-
-          <p class="mt-4 text-xl text-white/90">{{ d.profile.taglines.get(p.locale, d.profile.taglines.get('en')) }}</p>
-
           <div class="mt-6 flex flex-wrap gap-3">
             {% for key, href in d.profile.contacts.items() if href %}
               <a class="chip" href="{{ href }}" target="_blank" rel="noopener">{{ key|capitalize }}</a>
