@@ -167,7 +167,7 @@ def allowed_file(filename):
 @app.before_request
 def _serve_uploads_from_data():
     p = request.path
-    prefix = "/assets/uploads/"
+    prefix = "data/"
     if p.startswith(prefix):
         rel = p[len(prefix):]  # uploads/<user_id>/<file> -> <user_id>/<file>
         rel = rel.strip("/").replace("\\", "/")
