@@ -42,12 +42,12 @@
     .header-table { width:100%; border-collapse:collapse; }
     .header-table td { vertical-align:top; }
     .header-left { padding-right:16px; }
-    .header-right { width:190px; text-align:right; }
-    .avatar-box{
+    .header-right { width:148px; text-align:right; }
+    .avatar-box {
       display:inline-block; width:148px; height:148px;
-      border-radius:16px; overflow:hidden; border:none;
+      border-radius:16px; overflow:hidden;
       background-position:center center; background-repeat:no-repeat;
-      background-size:contain; background-color:#fff;
+      background-size:cover; background-color:#fff;
     }
 
     .progress { height:7px; border-radius:7px; background:#eef1f6; overflow:hidden; }
@@ -81,19 +81,24 @@
           {% if data.profile.contacts.telegram %}<span class="chip">Telegram: {{ data.profile.contacts.telegram }}</span>{% endif %}
         </div>
       </td>
-      <td class="header-right">
-        <span class="avatar-box" style="background-image:url('{{ url_for('static', filename=data.profile.avatar_url, _external=True) }}')"></span>
-      </td>
+        <td class="header-right">
+          {% if data.profile.avatar_url and data.profile.avatar_url.startswith("data/") %}
+            <div class="avatar-box" style="background-image:url('{{ url_for('serve_data', filename=data.profile.avatar_url[5:], _external=True) }}')"></div>
+          {% else %}
+            <div class="avatar-box" style="background-image:url('{{ url_for('static', filename='img/avatar-default.png', _external=True) }}')"></div>
+          {% endif %}
+        </td>
+
     </tr>
   </table>
 
   <div class="divider"></div>
 
   <!-- SUMMARY -->
-  {% set summary_text = data.about_html or data.profile.taglines.get(p.locale) or data.profile.taglines.get('en') %}
+  {% set summary_text = data.about_html or data.profile.taglines[0] %}
   {% if summary_text %}
   <div class="section">
-    <h2>Summary</h2>
+    <h2>{{ i18n.get("sections.about", "About") }}</h2>
     <div class="card small">
       {% if data.about_html %}{{ data.about_html|safe }}{% else %}<p class="muted">{{ summary_text }}</p>{% endif %}
     </div>
@@ -103,7 +108,7 @@
   <!-- EXPERIENCE -->
   {% if data.experience and data.experience|length %}
   <div class="section">
-    <h2>Experience</h2>
+    <h2>{{ i18n.get("sections.experience", "Experience") }}</h2>
     {% for e in data.experience %}
       <div class="card">
         <div class="row">
@@ -123,46 +128,30 @@
   <!-- PROJECTS -->
   {% if data.projects and data.projects|length %}
   <div class="section">
-    <h2>Projects</h2>
+    <h2>{{ i18n.get("sections.projects", "Projects") }}</h2>
     <table class="two-col-table">
       {% for pair in data.projects[:8]|batch(2, None) %}
       <tr>
+        {% for pj in pair %}
         <td>
-          {% if pair[0] %}
+          {% if pj %}
           <div class="card">
             <div class="row">
-              <div><b>{{ pair[0].title }}</b></div>
-              {% if pair[0].status %}<div style="text-align:right"><span class="muted small">{{ pair[0].status }}</span></div>{% endif %}
+              <div><b>{{ pj.title }}</b></div>
+              {% if pj.status %}<div style="text-align:right"><span class="muted small">{{ pj.status }}</span></div>{% endif %}
             </div>
-            {% if pair[0].description %}<div class="muted small" style="margin-top:6px">{{ pair[0].description }}</div>{% endif %}
-            {% if pair[0].tags %}<div style="margin-top:6px">{% for t in pair[0].tags %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% endif %}
-            {% if pair[0].github or pair[0].live %}
+            {% if pj.description %}<div class="muted small" style="margin-top:6px">{{ pj.description }}</div>{% endif %}
+            {% if pj.tags %}<div style="margin-top:6px">{% for t in pj.tags %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% endif %}
+            {% if pj.github or pj.live %}
               <div class="small muted" style="margin-top:6px">
-                {% if pair[0].github %}GitHub: {{ pair[0].github }}{% endif %}
-                {% if pair[0].live %}{% if pair[0].github %} · {% endif %}Live: {{ pair[0].live }}{% endif %}
+                {% if pj.github %}GitHub: {{ pj.github }}{% endif %}
+                {% if pj.live %}{% if pj.github %} · {% endif %}Live: {{ pj.live }}{% endif %}
               </div>
             {% endif %}
           </div>
           {% endif %}
         </td>
-        <td>
-          {% if pair[1] %}
-          <div class="card">
-            <div class="row">
-              <div><b>{{ pair[1].title }}</b></div>
-              {% if pair[1].status %}<div style="text-align:right"><span class="muted small">{{ pair[1].status }}</span></div>{% endif %}
-            </div>
-            {% if pair[1].description %}<div class="muted small" style="margin-top:6px">{{ pair[1].description }}</div>{% endif %}
-            {% if pair[1].tags %}<div style="margin-top:6px">{% for t in pair[1].tags %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% endif %}
-            {% if pair[1].github or pair[1].live %}
-              <div class="small muted" style="margin-top:6px">
-                {% if pair[1].github %}GitHub: {{ pair[1].github }}{% endif %}
-                {% if pair[1].live %}{% if pair[1].github %} · {% endif %}Live: {{ pair[1].live }}{% endif %}
-              </div>
-            {% endif %}
-          </div>
-          {% endif %}
-        </td>
+        {% endfor %}
       </tr>
       {% endfor %}
     </table>
@@ -172,71 +161,51 @@
   <!-- SKILLS -->
   {% if data.skills and data.skills|length %}
   <div class="section">
-    <h2>Skills</h2>
+    <h2>{{ i18n.get("sections.skills", "Skills") }}</h2>
     <table class="two-col-table">
       {% for pair in data.skills|batch(2, None) %}
       <tr>
+        {% for s in pair %}
         <td>
-          {% if pair[0] %}
+          {% if s %}
           <div class="card">
             <div class="skill-row small">
-              <div class="skill-name"><b>{{ pair[0].name }}</b>{% if pair[0].label %} <span class="muted">· {{ pair[0].label }}</span>{% endif %}</div>
-              <div class="skill-val muted">{{ pair[0].level }}%</div>
+              <div class="skill-name"><b>{{ s.name }}</b>{% if s.label %} <span class="muted">· {{ s.label }}</span>{% endif %}</div>
+              <div class="skill-val muted">{{ s.level }}%</div>
             </div>
-            <div class="progress" style="margin-top:6px"><span style="width: {{ pair[0].level|int }}%">&nbsp;</span></div>
+            <div class="progress" style="margin-top:6px"><span style="width: {{ s.level|int }}%">&nbsp;</span></div>
           </div>
           {% endif %}
         </td>
-        <td>
-          {% if pair[1] %}
-          <div class="card">
-            <div class="skill-row small">
-              <div class="skill-name"><b>{{ pair[1].name }}</b>{% if pair[1].label %} <span class="muted">· {{ pair[1].label }}</span>{% endif %}</div>
-              <div class="skill-val muted">{{ pair[1].level }}%</div>
-            </div>
-            <div class="progress" style="margin-top:6px"><span style="width: {{ pair[1].level|int }}%">&nbsp;</span></div>
-          </div>
-          {% endif %}
-        </td>
+        {% endfor %}
       </tr>
       {% endfor %}
     </table>
   </div>
   {% endif %}
 
-  <!-- LANGUAGES (CEFR) -->
+  <!-- LANGUAGES -->
   {% if data.spoken_languages and data.spoken_languages|length %}
   <div class="section">
-    <h2>Languages</h2>
+    <h2>{{ i18n.get("sections.languages", "Languages") }}</h2>
     <table class="two-col-table">
       {% for pair in data.spoken_languages|batch(2, None) %}
       <tr>
+        {% for l in pair %}
         <td>
-          {% if pair[0] %}
+          {% if l %}
           <div class="card">
             <div class="row small">
-              <div><b>{{ pair[0].name }}</b></div>
-              <div style="text-align:right"><span class="muted">{{ pair[0].label }}{% if pair[0].level is not none %} · {{ pair[0].level }}%{% endif %}</span></div>
+              <div><b>{{ l.name }}</b></div>
+              <div style="text-align:right"><span class="muted">{{ l.label }}{% if l.level is not none %} · {{ l.level }}%{% endif %}</span></div>
             </div>
-            {% if pair[0].level is not none %}
-            <div class="progress" style="margin-top:6px"><span style="width: {{ pair[0].level|int }}%">&nbsp;</span></div>
+            {% if l.level is not none %}
+            <div class="progress" style="margin-top:6px"><span style="width: {{ l.level|int }}%">&nbsp;</span></div>
             {% endif %}
           </div>
           {% endif %}
         </td>
-        <td>
-          {% if pair[1] %}
-          <div class="card">
-            <div class="row small">
-              <div><b>{{ pair[1].name }}</b></div>
-              <div style="text-align:right"><span class="muted">{{ pair[1].label }}{% if pair[1].level is not none %} · {{ pair[1].level }}%{% endif %}</span></div>
-            </div>
-            {% if pair[1].level is not none %}
-            <div class="progress" style="margin-top:6px"><span style="width: {{ pair[1].level|int }}%">&nbsp;</span></div>
-            {% endif %}
-          </div>
-          {% endif %}
-        </td>
+        {% endfor %}
       </tr>
       {% endfor %}
     </table>
@@ -244,145 +213,83 @@
   {% endif %}
 
   <!-- TECH STACK -->
-  {% set sg = data.stack_groups %}
-  {% if sg %}
+  {% if data.stack_groups %}
   <div class="section">
-    <h2>Tech Stack</h2>
-    {% if sg and sg[0] is mapping %}
-      {% set ns = namespace(groups=[]) %}
-      {% for g in sg if g.visible is not sameas(false) and g['items'] and g['items']|length %}
-        {% set _ = ns.groups.append(g) %}
+    <h2>{{ i18n.get("sections.stack", "Stack") }}</h2>
+    <table class="two-col-table">
+      {% for pair in data.stack_groups|batch(2, None) %}
+      <tr>
+        {% for g in pair %}
+        <td>
+          {% if g and g["items"] %}
+          <div class="card">
+            <div class="stack-title">{{ g.name }}</div>
+            {% for it in g["items"] %}<span class="chip">{{ it }}</span>{% endfor %}
+          </div>
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
       {% endfor %}
-      {% if ns.groups|length %}
-        <table class="two-col-table">
-          {% for pair in ns.groups|batch(2, None) %}
-          <tr>
-            <td>
-              {% if pair[0] %}
-                <div class="card">
-                  <div class="stack-title">{{ pair[0].name }}</div>
-                  {% for it in pair[0]['items'] %}<span class="chip">{{ it }}</span>{% endfor %}
-                </div>
-              {% endif %}
-            </td>
-            <td>
-              {% if pair[1] %}
-                <div class="card">
-                  <div class="stack-title">{{ pair[1].name }}</div>
-                  {% for it in pair[1]['items'] %}<span class="chip">{{ it }}</span>{% endfor %}
-                </div>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </table>
-      {% endif %}
-    {% else %}
-      {% set ns = namespace(groups=[]) %}
-      {% for group, items in sg.items() if items and items|length %}
-        {% set _ = ns.groups.append({'name':group, 'items':items}) %}
-      {% endfor %}
-      {% if ns.groups|length %}
-        <table class="two-col-table">
-          {% for pair in ns.groups|batch(2, None) %}
-          <tr>
-            <td>
-              {% if pair[0] %}
-                <div class="card">
-                  <div class="stack-title">{{ pair[0].name }}</div>
-                  {% for it in pair[0].items %}<span class="chip">{{ it }}</span>{% endfor %}
-                </div>
-              {% endif %}
-            </td>
-            <td>
-              {% if pair[1] %}
-                <div class="card">
-                  <div class="stack-title">{{ pair[1].name }}</div>
-                  {% for it in pair[1].items %}<span class="chip">{{ it }}</span>{% endfor %}
-                </div>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </table>
-      {% endif %}
-    {% endif %}
+    </table>
   </div>
   {% endif %}
 
   <!-- CERTIFICATES -->
   {% if data.certificates and data.certificates|length %}
   <div class="section">
-    <h2>Certificates</h2>
+    <h2>{{ i18n.get("sections.certificates", "Certificates") }}</h2>
     <table class="two-col-table">
       {% for pair in data.certificates|batch(2, None) %}
       <tr>
+        {% for c in pair %}
         <td>
-          {% if pair[0] %}
+          {% if c %}
           <div class="card small">
             <div class="row">
-              <div><b>{{ pair[0].name }}</b>{% if pair[0].issuer %} <span class="muted">— {{ pair[0].issuer }}</span>{% endif %}</div>
-              {% if pair[0].date %}<div style="text-align:right"><span class="muted">{{ pair[0].date }}</span></div>{% endif %}
+              <div><b>{{ c.name }}</b>{% if c.issuer %} <span class="muted">— {{ c.issuer }}</span>{% endif %}</div>
+              {% if c.date %}<div style="text-align:right"><span class="muted">{{ c.date }}</span></div>{% endif %}
             </div>
-            {% if pair[0].credential_id or pair[0].credential_url %}
+            {% if c.credential_id or c.credential_url %}
               <div class="muted" style="margin-top:4px">
-                {% if pair[0].credential_id %}ID: {{ pair[0].credential_id }}{% endif %}
-                {% if pair[0].credential_url %}{% if pair[0].credential_id %} · {% endif %}{{ pair[0].credential_url }}{% endif %}
+                {% if c.credential_id %}ID: {{ c.credential_id }}{% endif %}
+                {% if c.credential_url %}{% if c.credential_id %} · {% endif %}{{ c.credential_url }}{% endif %}
               </div>
             {% endif %}
           </div>
           {% endif %}
         </td>
-        <td>
-          {% if pair[1] %}
-          <div class="card small">
-            <div class="row">
-              <div><b>{{ pair[1].name }}</b>{% if pair[1].issuer %} <span class="muted">— {{ pair[1].issuer }}</span>{% endif %}</div>
-              {% if pair[1].date %}<div style="text-align:right"><span class="muted">{{ pair[1].date }}</span></div>{% endif %}
-            </div>
-            {% if pair[1].credential_id or pair[1].credential_url %}
-              <div class="muted" style="margin-top:4px">
-                {% if pair[1].credential_id %}ID: {{ pair[1].credential_id }}{% endif %}
-                {% if pair[1].credential_url %}{% if pair[1].credential_id %} · {% endif %}{{ pair[1].credential_url }}{% endif %}
-              </div>
-            {% endif %}
-          </div>
-          {% endif %}
-        </td>
+        {% endfor %}
       </tr>
       {% endfor %}
     </table>
   </div>
   {% endif %}
-  
+
   <!-- EDUCATION -->
   {% if data.education and data.education|length %}
   <div class="section">
-    <h2>Education</h2>
+    <h2>{{ i18n.get("sections.education", "Education") }}</h2>
     {% for ed in data.education %}
-      {% set is_obj = ed.__class__.__name__ != 'str' %}
-      <div class="card">
-        <div class="row">
-          <div><b>{{ ed.institution if is_obj else ed }}</b>{% if is_obj and ed.field %} <span class="muted">— {{ ed.field }}</span>{% endif %}</div>
-          {% if is_obj and (ed.start or ed.end) %}
-            <div style="text-align:right"><span class="muted small">
-              {% if ed.start %}{{ ed.start }}{% endif %}{% if ed.start or ed.end %} — {% endif %}{{ ed.end if ed.end else 'present' }}
-            </span></div>
-          {% endif %}
-        </div>
-        {% if is_obj %}
-          <div class="small muted" style="margin-top:4px">
-            {% if ed.level %}{{ ed.level }}{% endif %}
-            {% if ed.city or ed.country %}{% if ed.level %} · {% endif %}{{ ed.city }}{% if ed.city and ed.country %}, {% endif %}{{ ed.country }}{% endif %}
-            {% if ed.mode %}{% if ed.level or ed.city or ed.country %} · {% endif %}{{ ed.mode }}{% endif %}
-          </div>
-          {% if ed.description %}<div class="small muted" style="margin-top:4px">{{ ed.description }}</div>{% endif %}
+    <div class="card">
+      <div class="row">
+        <div><b>{{ ed.institution }}</b>{% if ed.field %} <span class="muted">— {{ ed.field }}</span>{% endif %}</div>
+        {% if ed.start or ed.end %}
+        <div style="text-align:right"><span class="muted small">
+          {% if ed.start %}{{ ed.start }}{% endif %}{% if ed.start or ed.end %} — {% endif %}{{ ed.end if ed.end else 'present' }}
+        </span></div>
         {% endif %}
       </div>
+      <div class="small muted" style="margin-top:4px">
+        {% if ed.level %}{{ ed.level }}{% endif %}
+        {% if ed.city or ed.country %}{% if ed.level %} · {% endif %}{{ ed.city }}{% if ed.city and ed.country %}, {% endif %}{{ ed.country }}{% endif %}
+        {% if ed.mode %}{% if ed.level or ed.city or ed.country %} · {% endif %}{{ ed.mode }}{% endif %}
+      </div>
+      {% if ed.description %}<div class="small muted" style="margin-top:4px">{{ ed.description }}</div>{% endif %}
+    </div>
     {% endfor %}
   </div>
   {% endif %}
 
 </body>
 </html>
-

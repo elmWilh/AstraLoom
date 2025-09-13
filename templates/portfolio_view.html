@@ -8,12 +8,9 @@
     <div class="pf-hero__inner p-6 md:p-10">
       <div class="grid md:grid-cols-[180px,1fr] gap-8 items-center">
         <div class="w-44 h-44 rounded-3xl p-[6px] pf-glow">
-        <div class="w-full h-full rounded-2xl bg-white/10 overflow-hidden flex items-center justify-center">
-          <img
-            class="w-full h-full object-cover object-center"
-            src="{{ url_for('static', filename=data.profile.avatar_url or 'img/avatar-default.png') }}?v={{ p.updated_at.timestamp()|int }}"
-            alt="avatar">
-        </div>
+          <div class="w-full h-full rounded-2xl bg-white/10 overflow-hidden flex items-center justify-center">
+            <img src="{{ '/' ~ d.profile.avatar_url if d.profile.avatar_url else url_for('static', filename='img/avatar-default.png') }}">
+          </div>
         </div>
         <div>
           <h1 class="pf-title text-4xl font-extrabold leading-tight tracking-tight">{{ d.profile.full_name }}</h1>
@@ -31,55 +28,48 @@
           </div>
           <div class="pf-nav mt-6 overflow-x-auto flex gap-2">
             {% set sections = d.ui.sections %}
-            {% if 'stack' in sections %}<a href="#stack" class="pf-pill">Stack</a>{% endif %}
-            {% if 'skills' in sections %}<a href="#skills" class="pf-pill">Skills</a>{% endif %}
-            {% if 'spoken' in sections %}<a href="#spoken" class="pf-pill">Languages</a>{% endif %}
-            {% if 'projects' in sections %}<a href="#projects" class="pf-pill">Projects</a>{% endif %}
-            {% if 'experience' in sections %}<a href="#experience" class="pf-pill">Experience</a>{% endif %}
-            {% if 'education' in sections %}<a href="#education" class="pf-pill">Education</a>{% endif %}
-            {% if 'certificates' in sections %}<a href="#certificates" class="pf-pill">Certificates</a>{% endif %}
-            {% if 'about' in sections %}<a href="#about" class="pf-pill">About</a>{% endif %}
+            {% if 'stack' in sections %}<a href="#stack" class="pf-pill" data-i18n="sections.stack"></a>{% endif %}
+            {% if 'skills' in sections %}<a href="#skills" class="pf-pill" data-i18n="sections.skills"></a>{% endif %}
+            {% if 'spoken' in sections %}<a href="#spoken" class="pf-pill" data-i18n="sections.languages"></a>{% endif %}
+            {% if 'projects' in sections %}<a href="#projects" class="pf-pill" data-i18n="sections.projects"></a>{% endif %}
+            {% if 'experience' in sections %}<a href="#experience" class="pf-pill" data-i18n="sections.experience"></a>{% endif %}
+            {% if 'education' in sections %}<a href="#education" class="pf-pill" data-i18n="sections.education"></a>{% endif %}
+            {% if 'certificates' in sections %}<a href="#certificates" class="pf-pill" data-i18n="sections.certificates"></a>{% endif %}
+            {% if 'about' in sections %}<a href="#about" class="pf-pill" data-i18n="sections.about"></a>{% endif %}
           </div>
         </div>
       </div>
     </div>
   </div>
+
   {% if 'about' in d.ui.sections %}
   <section id="about" class="mt-14">
-    <h2 class="section-title">About</h2>
+    <h2 class="section-title" data-i18n="sections.about"></h2>
     <div class="mt-6 pf-card p-6 leading-relaxed text-white/90">
       {{ d.about_html|safe }}
     </div>
   </section>
   {% endif %}
+
   {% if 'stack' in d.ui.sections %}
   <section id="stack" class="mt-14">
-    <h2 class="section-title">Tech Stack</h2>
+    <h2 class="section-title" data-i18n="sections.stack"></h2>
     <div class="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% if d.stack_groups is iterable and d.stack_groups and d.stack_groups[0] is mapping %}
-        {% for g in d.stack_groups if g.visible is not sameas(false) %}
-        <article class="pf-card pf-bright p-5">
-          <h3 class="text-lg font-semibold">{{ g.name }}</h3>
-          <div class="mt-3 flex flex-wrap gap-2">
-            {% for it in g['items'] %}<span class="tag">{{ it }}</span>{% endfor %}
-          </div>
-        </article>
-        {% endfor %}
-      {% else %}
-        {% for group, items in d.stack_groups.items() %}
-        <article class="pf-card pf-bright p-5">
-          <h3 class="text-lg font-semibold">{{ group }}</h3>
-          <div class="mt-3 flex flex-wrap gap-2">{% for it in items %}<span class="tag">{{ it }}</span>{% endfor %}</div>
-        </article>
-        {% endfor %}
-      {% endif %}
+      {% for g in d.stack_groups if g.visible is not sameas(false) %}
+      <article class="pf-card pf-bright p-5">
+        <h3 class="text-lg font-semibold">{{ g.name }}</h3>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {% for it in g['items'] %}<span class="tag">{{ it }}</span>{% endfor %}
+        </div>
+      </article>
+      {% endfor %}
     </div>
   </section>
   {% endif %}
 
   {% if 'skills' in d.ui.sections %}
   <section id="skills" class="mt-14">
-    <h2 class="section-title">Programming Skills</h2>
+    <h2 class="section-title" data-i18n="sections.skills"></h2>
     <div class="mt-6 grid md:grid-cols-2 gap-6">
       {% for s in d.skills %}
       <article class="pf-card p-5">
@@ -99,7 +89,7 @@
 
   {% if 'spoken' in d.ui.sections %}
   <section id="spoken" class="mt-14">
-    <h2 class="section-title">Languages (CEFR)</h2>
+    <h2 class="section-title" data-i18n="sections.languages"></h2>
     <div class="mt-6 grid md:grid-cols-2 gap-6">
       {% for l in d.spoken_languages %}
       <article class="pf-card p-5">
@@ -119,12 +109,12 @@
 
   {% if 'projects' in d.ui.sections %}
   <section id="projects" class="mt-14">
-    <h2 class="section-title">Projects</h2>
+    <h2 class="section-title" data-i18n="sections.projects"></h2>
     <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for pj in d.projects %}
       <article class="pf-card pf-bright p-4">
         <div class="aspect-video w-full rounded-2xl overflow-hidden pf-media relative">
-          <img src="{{ url_for('static', filename=pj.image) }}" class="w-full h-full object-cover" alt="">
+          <img src="/{{ pj.image }}" class="w-full h-full object-cover" alt="">
           {% if pj.status %}<span class="pf-ribbon">{{ pj.status }}</span>{% endif %}
         </div>
         <div class="mt-4">
@@ -132,8 +122,8 @@
           <p class="mt-2 text-white/80">{{ pj.description }}</p>
           <div class="mt-3 flex flex-wrap gap-2">{% for tg in pj.tags %}<span class="tag">{{ tg }}</span>{% endfor %}</div>
           <div class="mt-4 flex gap-3">
-            {% if pj.github %}<a class="btn" href="{{ pj.github }}" target="_blank">GitHub</a>{% endif %}
-            {% if pj.live %}<a class="btn btn--ghost" href="{{ pj.live }}" target="_blank">Live</a>{% endif %}
+            {% if pj.github %}<a class="btn" href="{{ pj.github }}" target="_blank" data-i18n="buttons.github"></a>{% endif %}
+            {% if pj.live %}<a class="btn btn--ghost" href="{{ pj.live }}" target="_blank" data-i18n="buttons.live"></a>{% endif %}
           </div>
         </div>
       </article>
@@ -144,7 +134,7 @@
 
   {% if 'experience' in d.ui.sections %}
   <section id="experience" class="mt-14">
-    <h2 class="section-title">Experience</h2>
+    <h2 class="section-title" data-i18n="sections.experience"></h2>
     <div class="mt-6 grid gap-5">
       {% for e in d.experience %}
       <article class="pf-card p-5">
@@ -163,21 +153,16 @@
 
   {% if 'education' in d.ui.sections %}
   <section id="education" class="mt-14">
-    <h2 class="section-title">Education</h2>
+    <h2 class="section-title" data-i18n="sections.education"></h2>
     <div class="timeline mt-8">
       {% for ed in d.education %}
-      {% set is_obj = ed.__class__.__name__ != 'str' %}
       <div class="timeline__item pf-card p-5">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div class="text-lg font-semibold">
-            {{ ed.institution if is_obj else ed }}
-            {% if is_obj and ed.field %}<span class="text-white/60 font-normal">— {{ ed.field }}</span>{% endif %}
+            {{ ed.institution }}{% if ed.field %}<span class="text-white/60 font-normal">— {{ ed.field }}</span>{% endif %}
           </div>
-          {% if is_obj %}
-            <div class="text-white/70">{% if ed.start %}{{ ed.start }}{% endif %}{% if ed.start or ed.end %} — {% endif %}{{ ed.end if ed.end else 'present' }}</div>
-          {% endif %}
+          <div class="text-white/70">{% if ed.start %}{{ ed.start }}{% endif %}{% if ed.start or ed.end %} — {% endif %}{{ ed.end if ed.end else 'present' }}</div>
         </div>
-        {% if is_obj %}
         <div class="mt-3 flex flex-wrap gap-2 text-sm">
           {% if ed.level %}<span class="pf-badge">{{ ed.level }}</span>{% endif %}
           {% if ed.type %}<span class="pf-badge">{{ ed.type }}</span>{% endif %}
@@ -185,7 +170,6 @@
           {% if ed.country or ed.city %}<span class="pf-badge">{{ ed.city }}{% if ed.city and ed.country %}, {% endif %}{{ ed.country }}</span>{% endif %}
         </div>
         {% if ed.description %}<p class="mt-3 text-white/85">{{ ed.description }}</p>{% endif %}
-        {% endif %}
       </div>
       {% endfor %}
     </div>
@@ -194,7 +178,7 @@
 
   {% if 'certificates' in d.ui.sections and d.certificates and d.certificates|length %}
   <section id="certificates" class="mt-14">
-    <h2 class="section-title">Certificates</h2>
+    <h2 class="section-title" data-i18n="sections.certificates"></h2>
     <div class="mt-6 grid md:grid-cols-2 gap-6">
       {% for c in d.certificates %}
       <article class="pf-card p-5 relative">
@@ -207,7 +191,7 @@
         </div>
         <div class="mt-3 flex flex-wrap gap-2 text-sm text-white/80">
           {% if c.credential_id %}<span class="chip">ID: {{ c.credential_id }}</span>{% endif %}
-          {% if c.credential_url %}<a class="chip" href="{{ c.credential_url }}" target="_blank" rel="noopener">Verify</a>{% endif %}
+          {% if c.credential_url %}<a class="chip" href="{{ c.credential_url }}" target="_blank" rel="noopener" data-i18n="buttons.verify"></a>{% endif %}
         </div>
         <span class="pf-corner"></span>
       </article>
@@ -216,4 +200,16 @@
   </section>
   {% endif %}
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.PORTFOLIO_LOCALE = "{{ p.locale or 'en' }}";
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.i18n) {
+      i18n.loadLocale(window.PORTFOLIO_LOCALE);
+    }
+  });
+</script>
+<script src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
 {% endblock %}

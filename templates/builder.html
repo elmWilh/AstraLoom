@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="py-4 pb-24 md:pb-10">
+  <!-- Toolbar -->
   <div id="editToolbar" class="toolbar px-4 md:px-6 py-3">
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
@@ -9,147 +10,147 @@
         </button>
 
         <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="AstraLoom" class="h-6 w-6 opacity-90">
-        <h1 class="text-xl md:text-2xl font-bold">Konstruktor: {{ p.title }}</h1>
+        <h1 class="text-xl md:text-2xl font-bold" data-i18n="toolbar.constructor"></h1>
         <a class="hidden sm:inline-flex chip" target="_blank" href="{{ url_for('view_portfolio', slug=p.slug) }}">
           <i class="bi bi-box-arrow-up-right"></i>/p/{{ p.slug }}
         </a>
       </div>
       <div class="hidden md:flex items-center gap-2">
-        <a class="btn--ghost" href="{{ url_for('export_pdf', pid=p.id) }}"><i class="bi bi-filetype-pdf"></i>Export PDF</a>
-        <button id="openSettings" class="btn--ghost"><i class="bi bi-gear"></i>Settings</button>
-        <button id="saveBtn" class="btn"><i class="bi bi-cloud-check"></i>Save</button>
+        <a class="btn--ghost" href="{{ url_for('export_pdf', pid=p.id) }}">
+          <i class="bi bi-filetype-pdf"></i><span data-i18n="buttons.export_pdf"></span>
+        </a>
+        <button id="openSettings" class="btn--ghost">
+          <i class="bi bi-gear"></i><span data-i18n="buttons.settings"></span>
+        </button>
+        <button id="saveBtn" class="btn">
+          <i class="bi bi-cloud-check"></i><span data-i18n="buttons.save"></span>
+        </button>
       </div>
     </div>
   </div>
 
+  <!-- Builder -->
   <div id="builder" class="mt-6 grid lg:grid-cols-[320px,1fr] gap-6">
+    <!-- Side drawer -->
     <div id="sideDrawer" class="drawer lg:static lg:block">
       <div class="drawer__mask" data-drawer-close="1"></div>
       <aside class="drawer__panel card space-y-4 h-[calc(100dvh-72px)] lg:h-max lg:sticky lg:top-24 overflow-y-auto">
         <div class="flex items-center justify-between lg:hidden mb-2">
-          <div class="text-sm text-white/70">Project settings</div>
-          <button class="chip" data-drawer-close="1"><i class="bi bi-x-lg"></i>Close</button>
+          <div class="text-sm text-white/70" data-i18n="labels.project_settings"></div>
+          <button class="chip" data-drawer-close="1"><i class="bi bi-x-lg"></i><span data-i18n="buttons.close"></span></button>
         </div>
 
         <div>
-          <label class="label">Tytuł</label>
+          <label class="label" data-i18n="labels.title"></label>
           <input class="input text-base h-11" id="title" placeholder="My portfolio">
         </div>
         <div>
-          <label class="label">Slug (URL)</label>
-          <input class="input text-base h-11" id="slug" placeholder="twoj-slug">
+          <label class="label" data-i18n="labels.slug"></label>
+          <input class="input text-base h-11" id="slug" placeholder="portfolio-slug">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="label">Primary color</label>
+            <label class="label" data-i18n="labels.primary_color"></label>
             <input class="input h-11" id="color" type="color">
           </div>
           <div>
-            <label class="label">Background</label>
+            <label class="label" data-i18n="labels.background"></label>
             <input class="input h-11" id="bg" type="color">
           </div>
         </div>
         <div>
-          <label class="label">Język UI</label>
+          <label class="label" data-i18n="labels.locale"></label>
           <select class="input text-base h-11" id="locale">
-            <option value="pl">PL</option>
-            <option value="en">EN</option>
-            <option value="uk">UA</option>
+            <option value="pl" {% if p.locale == "pl" %}selected{% endif %}>PL</option>
+            <option value="en" {% if p.locale == "en" %}selected{% endif %}>EN</option>
+            <option value="uk" {% if p.locale == "uk" %}selected{% endif %}>UA</option>
           </select>
+
         </div>
         <div class="pt-2">
-          <div class="text-sm text-white/70 mb-2">Sekcje</div>
+          <div class="text-sm text-white/70 mb-2" data-i18n="labels.sections"></div>
           <div id="sections" class="flex flex-wrap gap-2"></div>
         </div>
 
         <div class="lg:hidden pt-2 border-t border-white/10 flex gap-2 sticky bottom-0 bg-black/10 backdrop-blur rounded-b-2xl">
-          <button id="drawerSave" class="btn flex-1"><i class="bi bi-cloud-check"></i>Save</button>
-          <button id="drawerSettings" class="btn--ghost flex-1"><i class="bi bi-gear"></i>Settings</button>
+          <button id="drawerSave" class="btn flex-1"><i class="bi bi-cloud-check"></i><span data-i18n="buttons.save"></span></button>
+          <button id="drawerSettings" class="btn--ghost flex-1"><i class="bi bi-gear"></i><span data-i18n="buttons.settings"></span></button>
         </div>
       </aside>
     </div>
 
+    <!-- Main content -->
     <div class="space-y-6">
+      <!-- Profile -->
       <div class="card">
-        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-person-badge"></i>Profil i kontakty</h2>
+        <h2 class="text-xl font-semibold flex items-center gap-2">
+          <i class="bi bi-person-badge"></i><span data-i18n="sections.profile"></span>
+        </h2>
         <div id="profileEditor" class="mt-4 grid md:grid-cols-2 gap-4"></div>
         <div class="mt-3">
           <input type="file" id="avatarUpload" accept="image/*" class="hidden">
-          <button id="avatarUploadBtn" class="chip"><i class="bi bi-upload"></i>Upload Avatar</button>
+          <button id="avatarUploadBtn" class="chip"><i class="bi bi-upload"></i><span data-i18n="buttons.upload_avatar"></span></button>
           <span class="text-white/60 text-sm ml-2">PNG/JPG/WebP 5MB</span>
         </div>
       </div>
 
+      <!-- Projects -->
       <div class="card">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-kanban"></i>Projekty</h2>
-          <button class="chip" id="addProject"><i class="bi bi-plus-lg"></i>dodaj projekt</button>
+          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-kanban"></i><span data-i18n="sections.projects"></span></h2>
+          <button class="chip" id="addProject"><i class="bi bi-plus-lg"></i><span data-i18n="buttons.add_project"></span></button>
         </div>
         <div id="projectsEditor" class="mt-4 grid gap-3"></div>
       </div>
 
       <!-- Certificates -->
-      <section class="card">
+      <div class="card">
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold">Certificates</h3>
-          <div class="flex gap-2">
-            <button id="addCertBtn" type="button" class="chip">+ add</button>
-            <button id="saveCertsBtn" type="button" class="chip">Save</button>
-          </div>
+          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-award"></i><span data-i18n="sections.certificates"></span></h2>
+          <button class="chip" id="addCert"><i class="bi bi-plus-lg"></i><span data-i18n="buttons.add_certificate"></span></button>
         </div>
-        <div id="certList" class="mt-4 space-y-3"></div>
-        <template id="certRowTpl">
-          <div class="rounded-2xl p-3 bg-white/5 border border-white/10 flex flex-col gap-2">
-            <div class="grid md:grid-cols-2 gap-2">
-              <input class="input h-11" placeholder="Name">
-              <input class="input h-11" placeholder="Issuer">
-            </div>
-            <div class="grid md:grid-cols-3 gap-2">
-              <input class="input h-11" placeholder="Date (YYYY-MM)">
-              <input class="input h-11" placeholder="Credential ID (optional)">
-              <input class="input h-11" placeholder="Credential URL (optional)">
-            </div>
-            <div class="flex justify-end">
-              <button class="chip danger remove">Remove</button>
-            </div>
-          </div>
-        </template>
-      </section>
+        <div id="certEditor" class="mt-4 grid gap-3"></div>
+      </div>
 
       <!-- Stack -->
       <div class="card">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-puzzle"></i>Stack (grupy)</h2>
-          <button class="chip" id="addStackGroup"><i class="bi bi-plus-lg"></i>add group</button>
+          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-puzzle"></i><span data-i18n="sections.stack"></span></h2>
+          <button class="chip" id="addStackGroup"><i class="bi bi-plus-lg"></i><span data-i18n="buttons.add_group"></span></button>
         </div>
         <div id="stackEditor" class="mt-4 grid gap-3"></div>
       </div>
 
+      <!-- Skills -->
       <div class="card">
-        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-graph-up"></i>Skills (progress)</h2>
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-graph-up"></i><span data-i18n="sections.skills"></span></h2>
         <div id="skillsEditor" class="mt-4 grid gap-3"></div>
       </div>
 
+      <!-- Languages -->
       <div class="card">
-        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-translate"></i>Języki (CEFR)</h2>
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-translate"></i><span data-i18n="sections.languages"></span></h2>
         <div id="spokenEditor" class="mt-4 grid gap-3"></div>
       </div>
 
+      <!-- Experience -->
       <div class="card">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-briefcase"></i>Doświadczenie</h2>
-          <button class="chip" id="addExp"><i class="bi bi-plus-lg"></i>pozycja</button>
+          <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-briefcase"></i><span data-i18n="sections.experience"></span></h2>
+          <button class="chip" id="addExp"><i class="bi bi-plus-lg"></i><span data-i18n="buttons.add_experience"></span></button>
         </div>
         <div id="experienceEditor" class="mt-4 grid gap-3"></div>
       </div>
 
+      <!-- Education -->
       <div class="card">
-        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-mortarboard"></i>Edukacja / osiągnięcia</h2>
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-mortarboard"></i><span data-i18n="sections.education"></span></h2>
         <div id="eduEditor" class="mt-4 grid gap-3"></div>
       </div>
 
+      <!-- About -->
       <div class="card">
-        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-info-circle"></i>About (HTML)</h2>
+        <h2 class="text-xl font-semibold flex items-center gap-2"><i class="bi bi-info-circle"></i><span data-i18n="sections.about"></span></h2>
         <textarea id="aboutHtml" class="input h-40"></textarea>
       </div>
     </div>
@@ -161,31 +162,31 @@
   <div class="modal__backdrop" data-close="1"></div>
   <div class="modal__dialog card max-w-3xl mx-auto">
     <div class="flex items-center justify-between">
-      <h3 class="text-xl font-semibold">Ustawienia strony</h3>
-      <button class="chip" data-close="1"><i class="bi bi-x-lg"></i>Закрыть</button>
+      <h3 class="text-xl font-semibold" data-i18n="settings.title"></h3>
+      <button class="chip" data-close="1"><i class="bi bi-x-lg"></i><span data-i18n="buttons.close"></span></button>
     </div>
 
     <div class="mt-4 grid md:grid-cols-2 gap-4">
       <div>
-        <label class="label">Title</label>
+        <label class="label" data-i18n="labels.title"></label>
         <input class="input h-11" id="sm-title">
       </div>
       <div>
-        <label class="label">Slug</label>
+        <label class="label" data-i18n="labels.slug"></label>
         <input class="input h-11" id="sm-slug">
       </div>
       <div>
-        <label class="label">Primary color</label>
+        <label class="label" data-i18n="labels.primary_color"></label>
         <input class="input h-11" id="sm-color" type="color">
       </div>
       <div>
-        <label class="label">Background</label>
+        <label class="label" data-i18n="labels.background"></label>
         <input class="input h-11" id="sm-bg" type="color">
       </div>
       <div class="md:col-span-2">
-        <label class="label">Custom domain (info)</label>
+        <label class="label" data-i18n="labels.custom_domain"></label>
         <input class="input h-11" id="sm-domain" placeholder="yourdomain.com">
-        <p class="text-white/60 text-sm mt-1">We will add DNS connection later.</p>
+        <p class="text-white/60 text-sm mt-1" data-i18n="labels.dns_info"></p>
       </div>
       <div class="md:col-span-2">
         <div class="text-white/70 text-sm">Public URL: <span id="sm-public" class="text-white"></span></div>
@@ -194,40 +195,44 @@
 
     <div class="mt-6 flex items-start justify-between">
       <div>
-        <div class="text-red-400 font-semibold flex items-center gap-2"><i class="bi bi-exclamation-triangle"></i>Danger Zone</div>
-        <p class="text-white/70 text-sm">Deleting a portfolio is irreversible..</p>
-        <button id="deletePortfolio" class="btn--danger mt-2"><i class="bi bi-trash3"></i>Delete</button>
+        <div class="text-red-400 font-semibold flex items-center gap-2">
+          <i class="bi bi-exclamation-triangle"></i><span data-i18n="settings.danger_zone"></span>
+        </div>
+        <p class="text-white/70 text-sm" data-i18n="settings.delete_info"></p>
+        <button id="deletePortfolio" class="btn--danger mt-2"><i class="bi bi-trash3"></i><span data-i18n="buttons.delete"></span></button>
       </div>
       <div class="flex gap-2">
-        <button class="btn--ghost" data-close="1" id="smCancel"><i class="bi bi-x-circle"></i>Cancel</button>
-        <button class="btn" id="smSave"><i class="bi bi-check2-circle"></i>Save</button>
+        <button class="btn--ghost" data-close="1" id="smCancel"><i class="bi bi-x-circle"></i><span data-i18n="buttons.cancel"></span></button>
+        <button class="btn" id="smSave"><i class="bi bi-check2-circle"></i><span data-i18n="buttons.save"></span></button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Mobile action bar -->
 <div class="mbar md:hidden">
-  <a class="mbar__btn" href="{{ url_for('view_portfolio', slug=p.slug) }}"><i class="bi bi-box-arrow-up-right"></i><span>View</span></a>
-  <button id="mOpenSettings" class="mbar__btn"><i class="bi bi-gear"></i><span>Settings</span></button>
-  <a class="mbar__btn" href="{{ url_for('export_pdf', pid=p.id) }}"><i class="bi bi-filetype-pdf"></i><span>PDF</span></a>
-  <button id="mSave" class="mbar__btn mbar__btn--primary"><i class="bi bi-cloud-check"></i><span>Save</span></button>
+  <a class="mbar__btn" href="{{ url_for('view_portfolio', slug=p.slug) }}"><i class="bi bi-box-arrow-up-right"></i><span data-i18n="buttons.view"></span></a>
+  <button id="mOpenSettings" class="mbar__btn"><i class="bi bi-gear"></i><span data-i18n="buttons.settings"></span></button>
+  <a class="mbar__btn" href="{{ url_for('export_pdf', pid=p.id) }}"><i class="bi bi-filetype-pdf"></i><span data-i18n="buttons.export_pdf"></span></a>
+  <button id="mSave" class="mbar__btn mbar__btn--primary"><i class="bi bi-cloud-check"></i><span data-i18n="buttons.save"></span></button>
 </div>
 {% endblock %}
 
 {% block scripts %}
-{% set boot = {'pid': p.id, 'api': url_for('api_portfolio', pid=p.id), 'public': url_for('view_portfolio', slug=p.slug)} %}
+{% set boot = {
+  'pid': p.id,
+  'api': url_for('api_portfolio', pid=p.id),
+  'public': url_for('view_portfolio', slug=p.slug),
+  'locale': p.locale
+} %}
 <script>
-  (function(){
-    var tb = document.getElementById('editToolbar');
-    if (!tb) return;
-    function upd(){ if (window.scrollY > 8) tb.classList.add('toolbar-scrolled'); else tb.classList.remove('toolbar-scrolled'); }
-    document.addEventListener('scroll', upd, {passive:true}); upd();
-  })();
-  window.BUILDER_BOOT = {{ boot | tojson }};
+  window.BUILDER_BOOT = {{ boot | tojson | safe }};
 </script>
+
 <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css">
 <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
 <script src="{{ url_for('static', filename='js/builder.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
 
 <!-- Mobile drawer & action bar glue -->
 <script>
